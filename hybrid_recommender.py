@@ -5,7 +5,7 @@ from sklearn.neighbors import NearestNeighbors
 import re
 
 class HybridRecommender:
-    def __init__(self, content_based_weight=0.5, collaborative_weight=0.5, k=10):
+    def __init__(self, content_based_weight=0.5, collaborative_weight=0.5, k=5):
         self.content_based_weight = content_based_weight
         self.collaborative_weight = collaborative_weight
         self.k = k
