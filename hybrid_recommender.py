@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 from sklearn.neighbors import NearestNeighbors
+import re
 
 class HybridRecommender:
     def __init__(self, content_based_weight=0.5, collaborative_weight=0.5, k=10):
@@ -34,7 +35,18 @@ class HybridRecommender:
         self.cf_model = NearestNeighbors(metric='cosine', algorithm='brute')
         self.cf_model.fit(self.cf_data)
 
-    def recommend(self, movie_id):
+    def recommend(self, movie_name):
+        regex = re.compile(movie_name, re.IGNORECASE)
+        matches = self.df['title'].apply(lambda x: regex.search(x))
+        match_indices = [i for i, m in enumerate(matches) if m]
+
+        if not match_indices:
+            return None
+
+        # Use the first match to get the movie ID
+        match_idx = match_indices[0]
+        movie_id = self.df.iloc[match_idx]['id']
+
         # Get the index of the movie in the dataset
         idx = self.df[self.df['id'] == movie_id].index[0]
 
