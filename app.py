@@ -3,6 +3,7 @@ from flask_cors import CORS, cross_origin
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
+from hybrid_recommender import HybridRecommender
 
 # Load the dataset
 movies_df = pd.read_csv(
@@ -68,6 +69,25 @@ def recommendations():
     recommendations = get_recommendations(title, cosine_sim)
     response = make_response(jsonify(recommendations))
     return response
+
+@app.route('/recommend', methods=['POST'])
+def recommend_movies():
+    # Load the request data
+    data = request.json
+
+    # Validate the request data
+    if 'movie_id' not in data:
+        return jsonify({'error': 'Missing "movie_id" parameter'}), 400
+
+    # Initialize the recommender system
+    hybrid_recommender = HybridRecommender()
+
+    # Get the recommendations for the specified movie
+    movie_id = data['movie_id']
+    recommendations = hybrid_recommender.recommend(movie_id)
+
+    # Return the recommendations
+    return jsonify({'recommendations': recommendations})
 
 
 if __name__ == '__main__':
