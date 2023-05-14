@@ -20,6 +20,7 @@ movies_df['title'] = movies_df['title'].str.replace(' ', '_')
 
 # Create a matrix of user ratings
 cv = CountVectorizer()
+
 genres_matrix = cv.fit_transform(movies_df['genres'])
 
 # Calculate similarity between movies
@@ -27,14 +28,14 @@ cosine_sim = cosine_similarity(genres_matrix)
 
 app = Flask(__name__)
 
-cors = CORS(app, resources={
-            r"/*": {"origins": "http://localhost:3001"}}, supports_credentials=True)
-# CORS(app)
+
+CORS(app)
 
 
 # Function to get the top 5 most similar movies
 def get_recommendations(title, cosine_sim):
 
+    print(title)
     # Get the index of the movie that matches the title
     idx = movies_df[movies_df['title'] == title].index[0]
 
@@ -62,7 +63,7 @@ def index():
 
 
 @app.route('/recommendations', methods=['POST', 'OPTIONS'])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'], supports_credentials=True)
+# @cross_origin(origin='*', headers=['Content-Type', 'Authorization'], supports_credentials=True)
 def recommendations():
     title = request.json['title']
     recommendations = get_recommendations(title, cosine_sim)
@@ -71,4 +72,4 @@ def recommendations():
 
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(debug=True)
